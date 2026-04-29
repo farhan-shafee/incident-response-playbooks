@@ -1,29 +1,49 @@
-# ☁️ Cloud Security Incident Response Playbook (AWS/Azure)
+# Cloud Incident Response Playbook
 
-## Identification
-- Suspicious IAM activity (policy changes, role assumptions)
-- Unexpected EC2/Azure VM launches
-- Unrecognized API calls or console logins
-- Alerts from GuardDuty / Security Center / CloudTrail anomalies
+## Objective
+Contain suspicious cloud activity and restore trusted cloud configuration across identity, compute, storage, and network services.
 
-## Containment
-- Disable compromised API keys or credentials
-- Revoke active sessions
-- Isolate affected cloud assets (security groups, NSGs)
-- Block malicious IPs
+## Severity Criteria
+- **Low (SEV-3):** Single anomalous cloud event, no persistence/data access confirmed.
+- **Medium (SEV-2):** Unauthorized resource/API activity with limited impact.
+- **High (SEV-1):** Privilege abuse, large-scale configuration tampering, or sensitive data exposure.
 
-## Eradication
-- Remove unauthorized resources (EC2, containers, storage buckets)
-- Delete injected IAM policies or backdoor roles
-- Patch vulnerable cloud workloads
+## Initial Triage Steps
+1. Validate suspicious API activity and actor identity.
+2. Identify impacted accounts/subscriptions/projects and regions.
+3. Review IAM changes, key usage, and unusual resource creation.
+4. Determine potential data access/exfiltration.
 
-## Recovery
-- Restore resources from clean snapshots
-- Re-enable workloads under enhanced monitoring
-- Perform full audit of IAM permissions
+## Evidence to Collect
+- Cloud audit logs (management and data events).
+- IAM policy/role change history.
+- Storage/object access logs.
+- Network flow logs and security group/firewall changes.
 
-## Lessons Learned
-- Enforce MFA everywhere
-- Implement least privilege IAM roles
-- Enable CloudTrail/Defender/GuardDuty logging for all regions
-- Automate detection with SIEM integration
+## Containment Steps
+- Disable/rotate compromised keys and credentials.
+- Revoke suspicious sessions and temporary credentials.
+- Isolate affected resources and lock down network access.
+
+## Eradication Steps
+- Remove unauthorized resources and backdoor IAM artifacts.
+- Revert malicious or risky cloud configurations.
+- Patch vulnerable workloads/images.
+
+## Recovery Steps
+- Rebuild/restore affected workloads from known-good templates.
+- Re-enable services with guardrails and monitoring.
+- Validate least-privilege and logging coverage.
+
+## Communication / Escalation Guidance
+- Escalate to cloud platform owners and security leadership for SEV-1.
+- Coordinate legal/privacy review if regulated data exposure is possible.
+
+## Post-Incident Review Steps
+- Improve cloud detection coverage and IAM governance.
+- Add preventive controls (MFA, SCP/policy guardrails, key hygiene).
+
+## MITRE ATT&CK Mapping (Useful)
+- T1078: Valid Accounts
+- T1098: Account Manipulation
+- T1530: Data from Cloud Storage
