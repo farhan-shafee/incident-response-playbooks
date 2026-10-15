@@ -37,7 +37,7 @@ def object_fields(obj: Any, required: set[str], optional: set[str], label: str) 
 
 def string(value: Any, label: str, *, limit: int = 500) -> str:
     require(type(value) is str and 0 < len(value) <= limit and
-            not any(ord(c) < 32 or ord(c) == 127 for c in value),
+            not any(ord(c) < 32 or ord(c) == 127 or 0xD800 <= ord(c) <= 0xDFFF for c in value),
             f"{label}: expected nonempty text without control characters")
     return value
 

@@ -219,6 +219,19 @@ class ContractFailures(unittest.TestCase):
             with self.assertRaisesRegex(CaseError, "duplicate object key"):
                 case_from_file(case_path)
 
+    def test_excessively_nested_json_is_controlled_error(self):
+        with tempfile.TemporaryDirectory() as temp:
+            case_path = Path(temp) / "case.json"
+            case_path.write_bytes(b"[" * 1500 + b"0" + b"]" * 1500)
+            with self.assertRaises(CaseError):
+                case_from_file(case_path)
+
+    def test_unicode_surrogate_cannot_escape_into_report(self):
+        case = copy.deepcopy(case_from_file(FIXTURES / "positive.json"))
+        case["observations"][0]["description"] = "\ud800"
+        with self.assertRaises(CaseError):
+            document(case)
+
     def test_unexpected_object_alias_rejected(self):
         case = copy.deepcopy(case_from_file(FIXTURES / "positive.json"))
         case["is_production"] = False

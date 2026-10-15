@@ -32,8 +32,8 @@ def case_from_file(path: str | Path) -> dict:
         require(len(raw) <= MAX_CASE_BYTES, "case: file too large")
         case = json.loads(raw.decode("utf-8"), object_pairs_hook=json_pairs,
                           parse_constant=lambda v: (_ for _ in ()).throw(CaseError("JSON: nonfinite number")))
-    except (UnicodeError, json.JSONDecodeError) as exc:
-        raise CaseError("case: invalid UTF-8 JSON") from exc
+    except (UnicodeError, json.JSONDecodeError, RecursionError, OverflowError) as exc:
+        raise CaseError("case: invalid UTF-8 JSON or excessive nesting") from exc
     except OSError as exc:
         raise CaseError("case: cannot read file") from exc
     return document(case)
