@@ -41,6 +41,8 @@ jobs:
           check-latest: false
       - name: Check immutable synthetic fixtures
         run: python -B scripts/generate_ir_fixtures.py --check
+      - name: Verify optimized Python cannot bypass fixture checking
+        run: python -O -B scripts/generate_ir_fixtures.py --check
       - name: Compile offline case engine and tests
         run: python -B -m compileall -q ir_lab tests scripts/generate_ir_fixtures.py
       - name: Behavioral and adversarial tests

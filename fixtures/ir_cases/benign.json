@@ -48,6 +48,9 @@
       "evidence_ids": [
         "benign_log"
       ],
+      "explains_observation_ids": [
+        "obs_ben_mail"
+      ],
       "id": "obs_ben_auth",
       "kind": "authorized_activity",
       "occurred_at": "2026-10-03T10:01:00Z",
@@ -61,6 +64,9 @@
       ],
       "evidence_ids": [
         "benign_log"
+      ],
+      "explains_observation_ids": [
+        "obs_ben_mail"
       ],
       "id": "obs_ben_explain",
       "kind": "benign_explanation",

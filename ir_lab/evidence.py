@@ -32,8 +32,10 @@ def case_from_file(path: str | Path) -> dict:
         require(len(raw) <= MAX_CASE_BYTES, "case: file too large")
         case = json.loads(raw.decode("utf-8"), object_pairs_hook=json_pairs,
                           parse_constant=lambda v: (_ for _ in ()).throw(CaseError("JSON: nonfinite number")))
-    except (UnicodeError, json.JSONDecodeError, RecursionError, OverflowError) as exc:
-        raise CaseError("case: invalid UTF-8 JSON or excessive nesting") from exc
+    except CaseError:
+        raise
+    except (UnicodeError, json.JSONDecodeError, RecursionError, OverflowError, ValueError) as exc:
+        raise CaseError("case: invalid UTF-8 JSON, oversized number, or excessive nesting") from exc
     except OSError as exc:
         raise CaseError("case: cannot read file") from exc
     return document(case)
@@ -62,17 +64,18 @@ def normalized_utf8_v1(raw: bytes) -> bytes:
 def validate_artifacts(case: dict, case_path: str | Path) -> list[dict]:
     folder = Path(case_path).parent
     verified: list[dict] = []
-    seen_paths: set[Path] = set()
+    seen_paths: list[Path] = []
     retained_bytes: dict[str, bytes] = {}
     for item in case["evidence"]:
         location = safe_artifact(folder, item["path"])
-        require(location not in seen_paths, "evidence: duplicate artifact path")
-        seen_paths.add(location)
         try:
+            require(not any(location.samefile(earlier) for earlier in seen_paths),
+                    "evidence: duplicate physical artifact, alias, or hard link")
             with location.open("rb") as stream:
                 raw = stream.read(MAX_EVIDENCE_BYTES + 1)
         except OSError as exc:
-            raise CaseError("evidence: cannot read artifact") from exc
+            raise CaseError("evidence: cannot read or identify artifact") from exc
+        seen_paths.append(location)
         require(len(raw) <= MAX_EVIDENCE_BYTES, "evidence: artifact too large")
         require(len(raw) == item["byte_length"], f"evidence {item['id']}: byte length mismatch")
         require(hashlib.sha256(raw).hexdigest() == item["sha256"],
@@ -90,7 +93,10 @@ def validate_artifacts(case: dict, case_path: str | Path) -> list[dict]:
                          "source": item["source"], "collected_at": item["collected_at"],
                          "path": item["path"],
                          **({"parent_id": item["parent_id"], "transformation": item["transformation"]}
-                            if item["kind"] == "derived" else {})})
+                            if item["kind"] == "derived" else {}),
+                         **({"normalization": item["normalization"],
+                             "sha256_normalized": item["normalized_sha256"]}
+                            if "normalization" in item else {})})
     for item in case["evidence"]:
         if item["kind"] == "derived":
             try:

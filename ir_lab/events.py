@@ -29,7 +29,9 @@ def verify_event_references(case: dict, case_path: str | Path) -> list[dict]:
             require(len(raw) <= MAX_EVIDENCE_BYTES and
                     hashlib.sha256(raw).hexdigest() == item["sha256"],
                     "event source changed since integrity verification")
-            lines = raw.decode("utf-8").splitlines()
+            lines = raw.decode("utf-8").split("\n")
+            if lines and lines[-1] == "":
+                lines.pop()
         except (OSError, UnicodeError) as exc:
             raise CaseError("event stream: cannot read UTF-8 JSONL") from exc
         require(len(lines) <= 1000, "event stream: too many records")
@@ -38,8 +40,10 @@ def verify_event_references(case: dict, case_path: str | Path) -> list[dict]:
             require(bool(line.strip()), "event stream: blank record")
             try:
                 row = json.loads(line, object_pairs_hook=json_pairs)
-            except json.JSONDecodeError as exc:
-                raise CaseError("event stream: malformed JSONL") from exc
+            except CaseError:
+                raise
+            except (json.JSONDecodeError, RecursionError, ValueError, OverflowError) as exc:
+                raise CaseError("event stream: malformed JSONL, oversized number, or excessive nesting") from exc
             object_fields(row, {"event_id", "kind", "entity_ids", "occurred_at"},
                           {"summary"}, "event")
             event_id = identifier(row["event_id"], "event.event_id")

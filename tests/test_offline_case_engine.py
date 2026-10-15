@@ -47,6 +47,9 @@ def projection(result: dict) -> dict:
         "observations": len(result["observations"]),
         "event_matches": len(result["correlated_event_references"]),
         "actions": [a["kind"] for a in result["proposed_actions"]],
+        "action_ids": [a["id"] for a in result["proposed_actions"]],
+        "action_targets": {a["kind"]: a["target_ids"] for a in result["proposed_actions"]},
+        "supporting_observations": triage["supporting_observation_ids"],
     }
 
 
@@ -83,12 +86,22 @@ class IndependentExpectations(unittest.TestCase):
         for _ in range(5):
             self.assertEqual(first, canonical_json(validate_named("positive")))
 
-    def test_negative_control_wrong_severity_is_detected(self):
-        expected = GOLD["positive"]
-        result = projection(validate_named("positive"))
-        result["severity"] = "SEV-2"  # deliberate wrong outcome; not engine-generated
+    def test_negative_control_mutated_evaluator_fails_independent_oracle(self):
+        expected = {k: v for k, v in GOLD["positive"].items() if k != "warnings"}
+        genuine_evaluator = evaluate
+
+        def faulty_evaluator(case, artifacts):
+            actual = genuine_evaluator(case, artifacts)
+            actual["triage"]["provisional_severity"] = "SEV-2"
+            return actual
+
+        # Inject the wrong rule into the evaluator actually invoked by the
+        # normal case acceptance path, not into a projected result afterward.
+        with mock.patch(__name__ + ".evaluate", side_effect=faulty_evaluator):
+            wrong = projection(validate_named("positive"))
         with self.assertRaises(AssertionError):
-            self.assertEqual(result, {k: v for k, v in expected.items() if k != "warnings"})
+            self.assertEqual(wrong, expected)
+        self.assertEqual(projection(validate_named("positive")), expected)
 
     def test_report_html_and_markdown_are_neutralized(self):
         result = validate_named("positive")

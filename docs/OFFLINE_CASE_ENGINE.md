@@ -43,7 +43,9 @@ Each observation includes ID, kind, source, entity_ids, evidence_ids, occurred_a
 
 Permitted event kinds: message_delivery, link_click, credential_submission_report, suspicious_sign_in, authorized_activity, benign_explanation, identity_log_gap.
 
-Each JSONL row must contain event_id, kind, entity_ids and occurred_at, with optional summary. After SHA verification, the engine independently checks that a referenced row exists and agrees on event ID, kind, entity set and UTC instant. Incorrect or duplicate event IDs, source/observation conflicts, corrupted hashes and malformed source rows cause controlled failure. It preserves the original source offset and UTC microseconds.
+Each JSONL row must contain event_id, kind, entity_ids and occurred_at, with optional summary. After SHA verification, the engine independently checks that a referenced row exists and agrees on event ID, kind, entity set and UTC instant. Incorrect or duplicate event IDs, source/observation conflicts, corrupted hashes and malformed source rows cause controlled failure. It preserves the original source offset and UTC microseconds. JSONL records are separated only by LF (including CRLF input), **not** by Unicode line separators inside JSON strings. Invalid timezone minutes, oversized integers, and excessively nested JSON/JSONL cause controlled rejection.
+
+For authorization and benign-explanation observations, the optional list **explains_observation_ids** explicitly names the delivery observation(s) and their affected entities. A purported explanation cannot cite a delivery for a different entity. Only *artifact-backed authorization and explanation records that link to every relevant delivery and its identities* can support a benign case disposition. Unlinked labels may remain investigative observations but cannot clear an incident. An explicit identity_log_gap observation overrides contradictory declared log availability for confidence, warnings, investigation, and benign eligibility.
 
 A reported observation remains *reported* even if a user-report text artifact exists; it is not promoted to directly verified telemetry.
 
@@ -54,10 +56,12 @@ This phase implements the repository's phishing severity convention:
 - Reported credential submission: **provisional SEV-1**, urgent triage, but **not confirmed account takeover**.
 - Link interaction or multiple reported recipients: provisional SEV-2 if no reported submission.
 - Single suspicious delivery without interaction: provisional SEV-3 when applicable.
-- Corroborated authorized/benign synthetic event records: a case-scoped benign disposition when no conflicting malicious-access signals exist.
+- Artifact-correlated, **observation- and identity-linked** authorization and benign explanations for *every* delivered event: a case-scoped benign disposition only when identity/mail coverage is consistent and no conflicting indicators or explicit log gaps exist.
 - No supported criterion: severity pending, urgency assessed separately.
 
-Confidence is a conservative educational label, not a statistical probability. Missing identity logs or incomplete coverage lower confidence. Warnings and outstanding questions explicitly communicate unknowns.
+Confidence is a conservative educational label, not a statistical probability. Missing identity logs, explicitly reported logging gaps, contradictory coverage or incomplete evidence reduce assurance. Warnings and outstanding questions explicitly communicate unknowns; they cannot be cleared solely by a matching benign label.
+
+Generated proposed actions are scoped to compatible **user/mailbox identities actually linked to triggering observations**; host/IP-only records never authorize identity-action targets. Unsupported identity mapping produces a warning/question rather than fallback actions against unrelated assets. Input proposed actions are also checked for compatible and observation-relevant targets. Generated IDs are deterministic and unique across all existing case IDs, using stable suffixes if necessary.
 
 Allowed input action states are recommended and assumed_for_exercise. Any approved/attempted/verified state is reserved for future simulation, and rejected now. Approval, execution and verification remain **not_recorded** on the report. Recovery is always unverified. No response action runs.
 
@@ -76,14 +80,14 @@ Committed synthetic artifacts and case manifests can be verified offline:
 
     python -B scripts/generate_ir_fixtures.py --check
 
-The fixture generator's write mode only creates missing files; it refuses to overwrite existing ones.
+The fixture generator's write mode only creates missing files; it refuses to overwrite existing ones. Both ordinary and optimized Python (-O) fixture checks **actually read and compare retained bytes**. The scanner does **not** independently hunt every row in an artifact: it checks *nominated case observations*. Unreferenced JSONL records may exist without changing the verdict, and future IR workflows must not infer that unreferenced telemetry was comprehensively investigated. Physical artifact aliases (hardlinks and Windows trailing-dot paths) are rejected as duplicate evidence.
 
 ## Reproducible engineering evidence
 
     python -B -m unittest discover -s tests -v
     python -B scripts/generate_ir_fixtures.py --check
 
-Independent expected results live in tests/expected/independent_triage_expectations.json, not in the engine. Tests include positive/benign/incomplete cases, a deliberately conflicting adversarial case, false-severity negative control, time-offset precision, broken references, hash and normalized hash defects, source events inconsistent with their observations even when the file hash is recomputed, derived-lineage mismatch, approval/recovery restrictions, Markdown injection, no-output-overwrite and failed-output preservation.
+Independent expected results live in tests/expected/independent_triage_expectations.json, not in the engine; these now explicitly check **action targets, action IDs and decision-basis observation IDs**, not just action kinds. The mutation negative control injects a faulty severity evaluator into the real case acceptance path and proves the independent expectation detects it. Tests also cover unrelated benign evidence, contradictory identity log gaps, host-only and unrelated action scope, ID collisions, invalid timezone offset minutes, large/deep JSON, UTF-8 Unicode line separators in JSONL, Windows/hardlink file aliases, optimized fixture verification, evidence hashes/lineage, unsafe paths, Markdown injection, and safe no-clobber outputs.
 
 CI retains Bash documentation validation and additionally runs the Python suite on Ubuntu/Windows and Python 3.11/3.13. Green CI demonstrates behavior in this **offline synthetic scope only**, not real-world response effectiveness.
 

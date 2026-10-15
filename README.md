@@ -8,7 +8,7 @@ A **synthetic-only cybersecurity engineering portfolio** combining six incident-
 
 The implemented Python 3.11+ standard-library package validates structured incident cases, checks retained evidence SHA-256 digests, correlates artifact-sourced observations against actual JSONL event rows, and returns deterministic, explained triage decisions. It supports the phishing category as a **first vertical slice** only.
 
-A reported credential submission triggers provisional SEV-1 under this lab's phishing policy, but does **not** confirm account takeover. The engine distinguishes severity, urgency, confidence, missing evidence, proposed actions, and unverified recovery.
+A reported credential submission triggers provisional SEV-1 under this lab's phishing policy, but does **not** confirm account takeover. The engine distinguishes severity, urgency, confidence, missing evidence, proposed actions, and unverified recovery. **Benign explanations must be backed by observations linked to the exact deliveries and affected identities**; a benign event for another user cannot suppress investigation. Explicit logging gaps cannot be cleared by a contradictory coverage label. Proposed actions are limited to supported identity targets and carry unique IDs and observation references.
 
 Reproducible synthetic cases:
 
@@ -33,7 +33,7 @@ Write a reproducible **new** report (destination must not exist):
     python -B -m ir_lab render fixtures/ir_cases/positive.json --format json --output incident-result.json
     python -B -m ir_lab render fixtures/ir_cases/positive.json --format markdown --output incident-report.md
 
-The engine does not write during validation or triage. Rendering refuses overwrite, source aliases and unsafe paths. It never connects to real identity providers, runs a user-supplied command, or changes a service or account. All artifacts are synthetic; an intact hash is not independently proven forensic authenticity.
+The engine does not write during validation or triage. Rendering refuses overwrite, source aliases and unsafe paths. JSON/Markdown results include scoped entity information, corroborated source event IDs, decision/action evidence references, and separate raw/normalized artifact digests where applicable. It never connects to real identity providers, runs a user-supplied command, or changes a service or account. **Only nominated observations are evaluated; unreferenced JSONL events are not hunted or independently assessed.** All artifacts are synthetic; an intact hash is not independently proven forensic authenticity.
 
 ### Run verification
 
@@ -82,7 +82,7 @@ Each playbook documents an objective, severity criteria, triage, evidence, propo
 2. Validate the positive fixture and show raw-vs-normalized evidence digests plus correlated source-event IDs.
 3. Triage the positive case, explaining provisional SEV-1 and why the account-takeover flag and recovery status are still unverified.
 4. Compare benign and incomplete cases; explain how corroborating events and absent log coverage change disposition and confidence.
-5. Validate the adversarial fixture (expected nonzero exit), show independently authored expected results, and discuss CI behavioral/negative controls.
+5. Validate the adversarial fixture (expected nonzero exit), show independently authored expected **action target and unique-ID** results, and discuss the additional unrelated-user, logging-gap, hostile-JSON and output-alias negative controls.
 
 ## Limits and Next Milestones
 

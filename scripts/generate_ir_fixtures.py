@@ -58,12 +58,15 @@ def create() -> dict[str, bytes]:
                 "collected_at": "2026-10-04T12:00:00Z", **extra}
 
     def obs(identifier: str, kind: str, source: str, user: str, event_at: str,
-            description: str, ev_ids: list[str], event_id: str | None = None) -> dict:
+            description: str, ev_ids: list[str], event_id: str | None = None,
+            explains: list[str] | None = None) -> dict:
         result = {"id": identifier, "kind": kind, "source": source,
                   "entity_ids": [user], "evidence_ids": ev_ids,
                   "occurred_at": event_at, "description": description}
         if event_id is not None:
             result["source_event_id"] = event_id
+        if explains is not None:
+            result["explains_observation_ids"] = explains
         return result
 
     def case(case_id: str, user: str, evidence_items: list[dict],
@@ -109,10 +112,10 @@ def create() -> dict[str, bytes]:
             "Synthetic planned exercise email arrived.", ["benign_log"], "benign_mail_001"),
         obs("obs_ben_auth", "authorized_activity", "artifact", "user_ben",
             "2026-10-03T10:01:00Z", "Approved simulation activity recorded.",
-            ["benign_log"], "authorized_001"),
+            ["benign_log"], "authorized_001", explains=["obs_ben_mail"]),
         obs("obs_ben_explain", "benign_explanation", "artifact", "user_ben",
             "2026-10-03T10:02:00Z", "Change-control record explains activity.",
-            ["benign_log"], "explanation_001")
+            ["benign_log"], "explanation_001", explains=["obs_ben_mail"])
     ], {"identity_logs": "available", "mail_logs": "available", "endpoint_logs": "available"})
 
     incomplete = case("LAB-IR-INCOMPLETE", "user_casey", [
@@ -150,7 +153,12 @@ def main() -> None:
             with dest.open("xb") as stream:
                 stream.write(raw)
         else:
-            assert dest.read_bytes() == raw, f"Fixture drift: {name}"
+            try:
+                observed = dest.read_bytes()
+            except OSError as exc:
+                raise SystemExit(f"Fixture unavailable: {name}") from exc
+            if observed != raw:
+                raise SystemExit(f"Fixture drift: {name}")
     print(f"{'CREATED' if args.write else 'PASS'} {len(files)} deterministic synthetic fixtures")
 
 

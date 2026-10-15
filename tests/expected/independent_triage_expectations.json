@@ -13,6 +13,29 @@
       "revoke_sessions",
       "scope_recipients"
     ],
+    "action_ids": [
+      "policy_investigate_signins",
+      "policy_review_authentication_methods",
+      "action_revoke",
+      "policy_scope_recipients"
+    ],
+    "action_targets": {
+      "investigate_signins": [
+        "user_alex"
+      ],
+      "review_authentication_methods": [
+        "user_alex"
+      ],
+      "revoke_sessions": [
+        "user_alex"
+      ],
+      "scope_recipients": [
+        "user_alex"
+      ]
+    },
+    "supporting_observations": [
+      "obs_submission"
+    ],
     "warnings": [
       "endpoint_logs_missing",
       "successful_account_takeover_not_established"
@@ -27,6 +50,13 @@
     "observations": 3,
     "event_matches": 3,
     "actions": [],
+    "action_ids": [],
+    "action_targets": {},
+    "supporting_observations": [
+      "obs_ben_auth",
+      "obs_ben_explain",
+      "obs_ben_mail"
+    ],
     "warnings": [
       "benign_explanation_is_case_scoped_not_universal"
     ]
@@ -44,6 +74,29 @@
       "review_authentication_methods",
       "revoke_sessions",
       "scope_recipients"
+    ],
+    "action_ids": [
+      "policy_investigate_signins",
+      "policy_review_authentication_methods",
+      "policy_revoke_sessions",
+      "policy_scope_recipients"
+    ],
+    "action_targets": {
+      "investigate_signins": [
+        "user_casey"
+      ],
+      "review_authentication_methods": [
+        "user_casey"
+      ],
+      "revoke_sessions": [
+        "user_casey"
+      ],
+      "scope_recipients": [
+        "user_casey"
+      ]
+    },
+    "supporting_observations": [
+      "obs_report_only"
     ],
     "warnings": [
       "identity_logs_missing",

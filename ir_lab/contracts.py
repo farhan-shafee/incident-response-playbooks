@@ -8,13 +8,30 @@ from typing import Any
 CASE_VERSION = "ir-case/1.0"
 RESULT_VERSION = "ir-result/1.0"
 ID = re.compile(r"^[a-zA-Z][a-zA-Z0-9_-]{0,63}$")
-UTC_TIME = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$")
+UTC_TIME = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
 KINDS = {"message_delivery", "link_click", "credential_submission_report",
          "suspicious_sign_in", "authorized_activity", "benign_explanation",
          "identity_log_gap"}
 ACTIONS = {"investigate_signins", "quarantine_message", "revoke_sessions",
            "review_authentication_methods", "scope_recipients"}
+# Target kinds and observations that justify recommending an action.
+ACTION_TARGET_KINDS = {
+    "investigate_signins": frozenset({"user"}),
+    "review_authentication_methods": frozenset({"user"}),
+    "revoke_sessions": frozenset({"user"}),
+    "scope_recipients": frozenset({"user", "mailbox"}),
+    "quarantine_message": frozenset({"user", "mailbox"}),
+}
+ACTION_TRIGGER_KINDS = {
+    "investigate_signins": frozenset({"credential_submission_report", "link_click",
+                                      "suspicious_sign_in"}),
+    "review_authentication_methods": frozenset({"credential_submission_report", "suspicious_sign_in"}),
+    "revoke_sessions": frozenset({"credential_submission_report", "suspicious_sign_in"}),
+    "scope_recipients": frozenset({"message_delivery", "link_click",
+                                    "credential_submission_report", "suspicious_sign_in"}),
+    "quarantine_message": frozenset({"message_delivery", "link_click"}),
+}
 MAX_CASE_ITEMS = 80
 
 
@@ -94,10 +111,14 @@ def document(case: Any) -> dict:
         return name
 
     entities: set[str] = set()
+    entity_types: dict[str, str] = {}
     for item in case["entities"]:
         object_fields(item, {"id", "kind", "value"}, set(), "entity")
-        entities.add(reserve(item, "entity"))
-        require(item["kind"] in ("user", "mailbox", "host", "ip"), "entity: invalid kind")
+        entity_id = reserve(item, "entity")
+        entities.add(entity_id)
+        require(type(item["kind"]) is str and
+                item["kind"] in ("user", "mailbox", "host", "ip"), "entity: invalid kind")
+        entity_types[entity_id] = item["kind"]
         string(item["value"], "entity.value", limit=160)
 
     evidence: set[str] = set()
@@ -147,7 +168,8 @@ def document(case: Any) -> dict:
     event_ids: set[tuple[str, str]] = set()
     for item in case["observations"]:
         object_fields(item, {"id", "kind", "source", "entity_ids", "evidence_ids",
-                             "occurred_at", "description"}, {"source_event_id"}, "observation")
+                             "occurred_at", "description"},
+                      {"source_event_id", "explains_observation_ids"}, "observation")
         observation_ids.add(reserve(item, "observation"))
         require(type(item["kind"]) is str and item["kind"] in KINDS, "observation: unsupported kind")
         require(item["source"] in ("reported", "artifact"), "observation: unsupported source")
@@ -165,11 +187,32 @@ def document(case: Any) -> dict:
                 require(key not in event_ids, "observation: conflicting/duplicate source event identity")
                 event_ids.add(key)
 
+    by_observation = {item["id"]: item for item in case["observations"]}
+    for item in case["observations"]:
+        if "explains_observation_ids" not in item:
+            continue
+        require(item["kind"] in {"authorized_activity", "benign_explanation"} and
+                item["source"] == "artifact",
+                "explanation references require artifact-backed authorization or benign evidence")
+        for target in unique_refs(item["explains_observation_ids"], observation_ids,
+                                  "observation.explains_observation_ids", nonempty=True):
+            explained = by_observation[target]
+            require(explained["kind"] == "message_delivery",
+                    "explanation must refer to a delivery observation")
+            require(set(explained["entity_ids"]).issubset(set(item["entity_ids"])),
+                    "explanation must cover the delivery's affected entities")
+
     for item in case["actions"]:
         object_fields(item, {"id", "kind", "target_ids", "state", "reason"}, set(), "action")
         reserve(item, "action")
         require(type(item["kind"]) is str and item["kind"] in ACTIONS, "action: unsupported proposed action")
-        unique_refs(item["target_ids"], entities, "action.target_ids", nonempty=True)
+        targets = unique_refs(item["target_ids"], entities, "action.target_ids", nonempty=True)
+        for target in targets:
+            require(entity_types[target] in ACTION_TARGET_KINDS[item["kind"]],
+                    "action: incompatible target entity kind")
+            require(any(obs["kind"] in ACTION_TRIGGER_KINDS[item["kind"]] and
+                        target in obs["entity_ids"] for obs in case["observations"]),
+                    "action: target is unrelated to supporting observations")
         string(item["reason"], "action.reason")
         require(item["state"] in ("recommended", "assumed_for_exercise"),
                 "action: approval, execution and verification states are reserved for a later phase")
