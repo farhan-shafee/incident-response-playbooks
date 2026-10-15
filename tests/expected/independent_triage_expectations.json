@@ -1,0 +1,54 @@
+{
+  "positive": {
+    "case_id": "LAB-IR-POSITIVE",
+    "severity": "SEV-1",
+    "urgency": "urgent",
+    "confidence": "medium",
+    "disposition": "suspected_incident",
+    "observations": 3,
+    "event_matches": 2,
+    "actions": [
+      "investigate_signins",
+      "review_authentication_methods",
+      "revoke_sessions",
+      "scope_recipients"
+    ],
+    "warnings": [
+      "endpoint_logs_missing",
+      "successful_account_takeover_not_established"
+    ]
+  },
+  "benign": {
+    "case_id": "LAB-IR-BENIGN",
+    "severity": "none",
+    "urgency": "routine",
+    "confidence": "medium",
+    "disposition": "benign_explained",
+    "observations": 3,
+    "event_matches": 3,
+    "actions": [],
+    "warnings": [
+      "benign_explanation_is_case_scoped_not_universal"
+    ]
+  },
+  "incomplete": {
+    "case_id": "LAB-IR-INCOMPLETE",
+    "severity": "SEV-1",
+    "urgency": "urgent",
+    "confidence": "low",
+    "disposition": "suspected_incident",
+    "observations": 1,
+    "event_matches": 0,
+    "actions": [
+      "investigate_signins",
+      "review_authentication_methods",
+      "revoke_sessions",
+      "scope_recipients"
+    ],
+    "warnings": [
+      "identity_logs_missing",
+      "mail_logs_missing",
+      "no_artifact_correlated_observations"
+    ]
+  }
+}

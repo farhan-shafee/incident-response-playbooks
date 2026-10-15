@@ -1,0 +1,77 @@
+{
+  "actions": [],
+  "case_id": "LAB-IR-BENIGN",
+  "category": "phishing",
+  "coverage": {
+    "endpoint_logs": "available",
+    "identity_logs": "available",
+    "mail_logs": "available"
+  },
+  "entities": [
+    {
+      "id": "user_ben",
+      "kind": "user",
+      "value": "user_ben@example.test"
+    }
+  ],
+  "evidence": [
+    {
+      "byte_length": 532,
+      "collected_at": "2026-10-04T12:00:00Z",
+      "id": "benign_log",
+      "kind": "original",
+      "path": "artifacts/benign_events.jsonl",
+      "sha256": "1bbd4d417451a66adff08cc7f2b4c13b7863a4a96854cec585b3f47142110c17",
+      "source": "Synthetic approved activity audit"
+    }
+  ],
+  "observations": [
+    {
+      "description": "Synthetic planned exercise email arrived.",
+      "entity_ids": [
+        "user_ben"
+      ],
+      "evidence_ids": [
+        "benign_log"
+      ],
+      "id": "obs_ben_mail",
+      "kind": "message_delivery",
+      "occurred_at": "2026-10-03T10:00:00Z",
+      "source": "artifact",
+      "source_event_id": "benign_mail_001"
+    },
+    {
+      "description": "Approved simulation activity recorded.",
+      "entity_ids": [
+        "user_ben"
+      ],
+      "evidence_ids": [
+        "benign_log"
+      ],
+      "id": "obs_ben_auth",
+      "kind": "authorized_activity",
+      "occurred_at": "2026-10-03T10:01:00Z",
+      "source": "artifact",
+      "source_event_id": "authorized_001"
+    },
+    {
+      "description": "Change-control record explains activity.",
+      "entity_ids": [
+        "user_ben"
+      ],
+      "evidence_ids": [
+        "benign_log"
+      ],
+      "id": "obs_ben_explain",
+      "kind": "benign_explanation",
+      "occurred_at": "2026-10-03T10:02:00Z",
+      "source": "artifact",
+      "source_event_id": "explanation_001"
+    }
+  ],
+  "recovery": {
+    "state": "unverified"
+  },
+  "schema_version": "ir-case/1.0",
+  "synthetic": true
+}
