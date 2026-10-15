@@ -45,6 +45,18 @@ Preserve these distinctions in handoffs and stakeholder updates. Record relevant
 - Stakeholder updates are concise, objective, and periodic.
 - Recovery and closure require defined checks, supporting evidence, residual-risk documentation, and reviewer acceptance. Otherwise retain an unverified outcome or explicitly label any illustrative closure assumption.
 
+### Historical Illustrative Reports
+
+These historical lab examples have not yet satisfied the evidence-backed recovery and closure requirements above:
+
+- [example_completed_report_cloud.md](../reports/example_completed_report_cloud.md)
+- [example_completed_report_malware.md](../reports/example_completed_report_malware.md)
+- [example_completed_report_data_exposure.md](../reports/example_completed_report_data_exposure.md)
+
+In these three reports, "Resolved (Lab)" and completed-action wording represent unverified exercise assumptions, not independently verified operational results. No supporting artifacts or verification records are provided for those claimed outcomes. Each report still requires individual correction in a subsequent PR; this clarification neither supplies missing evidence nor validates containment, recovery, or closure.
+
+All new evidence-backed incident cases must meet the requirements above. Historical labels and assumed outcomes cannot serve as verification evidence or as an exception to those requirements.
+
 ## Portfolio Lab Boundaries
 
 - Scenarios are sanitized and educational.
