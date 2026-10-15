@@ -89,10 +89,10 @@ def evaluate(case: dict, artifacts: list[dict]) -> dict:
         decision_obs = [o["id"] for o in observations
                         if o["kind"] == "link_click" or
                         (multiple_recipients and o["kind"] == "message_delivery")]
-    elif delivered and not suspicious:
+    elif delivered:
         severity, urgency, disposition, rule = (
             "SEV-3", "routine", "needs_investigation",
-            "A suspicious delivered message with no documented interaction meets SEV-3; consider unknowns.")
+            "A suspicious delivered message without documented link clicks or credential submission meets SEV-3; an inconclusive sign-in does not erase the delivery criterion.")
         decision_obs = [o["id"] for o in observations if o["kind"] == "message_delivery"]
     else:
         severity, urgency, disposition, rule = (
@@ -103,7 +103,9 @@ def evaluate(case: dict, artifacts: list[dict]) -> dict:
 
     # A reported logging gap remains a gap even when the summary coverage says
     # "available"; such disagreement must be reconciled rather than cleared.
-    if explicit_identity_gap and urgency == "routine":
+    if (suspicious or explicit_identity_gap) and urgency == "routine":
+        # A separate unresolved sign-in or visibility gap raises urgency, but
+        # must not discard a delivery-backed SEV-3 or its source observation.
         urgency = "elevated"
 
     supported = [obs for obs in observations if obs["source"] == "artifact"]

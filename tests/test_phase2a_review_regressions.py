@@ -362,6 +362,53 @@ class SeverityBranches(unittest.TestCase):
         result, _ = audited_result(case, FIXTURES / "positive.json")
         self.assertEqual(result["triage"]["provisional_severity"], "pending")
 
+    def test_delivery_with_inconclusive_signin_retains_sev_three_and_support(self):
+        case = copy.deepcopy(load(FIXTURES / "positive.json"))
+        case["observations"] = [
+            obs for obs in case["observations"]
+            if obs["kind"] != "credential_submission_report"
+        ]
+        case["actions"] = []
+        result, refs = audited_result(case, FIXTURES / "positive.json")
+        self.assertEqual({item["event_id"] for item in refs}, {"mail_001", "login_001"})
+        triage = result["triage"]
+        self.assertEqual(triage["provisional_severity"], "SEV-3")
+        self.assertEqual(triage["urgency"], "elevated")
+        self.assertEqual(triage["disposition"], "needs_investigation")
+        self.assertEqual(triage["supporting_observation_ids"], ["obs_delivery"])
+        self.assertFalse(triage["account_takeover_confirmed"])
+        self.assertIn("successful_account_takeover_not_established",
+                      result["quality_warnings"])
+        self.assertTrue(any("unauthorized account use" in item
+                            for item in result["outstanding_questions"]))
+        actions = {item["kind"]: item for item in result["proposed_actions"]}
+        self.assertEqual(set(actions), {"scope_recipients", "investigate_signins"})
+        self.assertEqual(actions["investigate_signins"]["target_ids"], ["user_alex"])
+        self.assertEqual(actions["investigate_signins"]["supporting_observation_ids"],
+                         ["obs_signin"])
+        self.assertEqual(actions["scope_recipients"]["target_ids"], ["user_alex"])
+        self.assertEqual(actions["scope_recipients"]["supporting_observation_ids"],
+                         ["obs_delivery", "obs_signin"])
+
+    def test_delivery_plus_signin_and_missing_identity_coverage(self):
+        case = copy.deepcopy(load(FIXTURES / "positive.json"))
+        case["observations"] = [
+            obs for obs in case["observations"]
+            if obs["kind"] != "credential_submission_report"
+        ]
+        case["actions"] = []
+        case["coverage"]["identity_logs"] = "missing"
+        result, refs = audited_result(case, FIXTURES / "positive.json")
+        self.assertEqual(len(refs), 2)
+        self.assertEqual(result["triage"]["provisional_severity"], "SEV-3")
+        self.assertEqual(result["triage"]["urgency"], "elevated")
+        self.assertEqual(result["triage"]["confidence"], "low")
+        self.assertEqual(result["triage"]["supporting_observation_ids"],
+                         ["obs_delivery"])
+        self.assertIn("identity_logs_missing", result["quality_warnings"])
+        self.assertTrue(any("Reconcile" in item
+                            for item in result["outstanding_questions"]))
+
 
 if __name__ == "__main__":
     unittest.main()
