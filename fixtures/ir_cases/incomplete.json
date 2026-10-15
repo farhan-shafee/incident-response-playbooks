@@ -1,0 +1,48 @@
+{
+  "actions": [],
+  "case_id": "LAB-IR-INCOMPLETE",
+  "category": "phishing",
+  "coverage": {
+    "endpoint_logs": "unknown",
+    "identity_logs": "missing",
+    "mail_logs": "missing"
+  },
+  "entities": [
+    {
+      "id": "user_casey",
+      "kind": "user",
+      "value": "user_casey@example.test"
+    }
+  ],
+  "evidence": [
+    {
+      "byte_length": 74,
+      "collected_at": "2026-10-04T12:00:00Z",
+      "id": "reported_note",
+      "kind": "original",
+      "path": "artifacts/incomplete_note.txt",
+      "sha256": "35ce60faf59e09ea02f5eb11655f9d1430806e42c28c94c1c018ec729673de9b",
+      "source": "Synthetic telephone report"
+    }
+  ],
+  "observations": [
+    {
+      "description": "Caller reports credential submission; logs unavailable.",
+      "entity_ids": [
+        "user_casey"
+      ],
+      "evidence_ids": [
+        "reported_note"
+      ],
+      "id": "obs_report_only",
+      "kind": "credential_submission_report",
+      "occurred_at": "2026-10-02T17:00:00Z",
+      "source": "reported"
+    }
+  ],
+  "recovery": {
+    "state": "unverified"
+  },
+  "schema_version": "ir-case/1.0",
+  "synthetic": true
+}

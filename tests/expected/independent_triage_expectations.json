@@ -1,0 +1,107 @@
+{
+  "positive": {
+    "case_id": "LAB-IR-POSITIVE",
+    "severity": "SEV-1",
+    "urgency": "urgent",
+    "confidence": "medium",
+    "disposition": "suspected_incident",
+    "observations": 3,
+    "event_matches": 2,
+    "actions": [
+      "investigate_signins",
+      "review_authentication_methods",
+      "revoke_sessions",
+      "scope_recipients"
+    ],
+    "action_ids": [
+      "policy_investigate_signins",
+      "policy_review_authentication_methods",
+      "action_revoke",
+      "policy_scope_recipients"
+    ],
+    "action_targets": {
+      "investigate_signins": [
+        "user_alex"
+      ],
+      "review_authentication_methods": [
+        "user_alex"
+      ],
+      "revoke_sessions": [
+        "user_alex"
+      ],
+      "scope_recipients": [
+        "user_alex"
+      ]
+    },
+    "supporting_observations": [
+      "obs_submission"
+    ],
+    "warnings": [
+      "endpoint_logs_missing",
+      "successful_account_takeover_not_established"
+    ]
+  },
+  "benign": {
+    "case_id": "LAB-IR-BENIGN",
+    "severity": "none",
+    "urgency": "routine",
+    "confidence": "medium",
+    "disposition": "benign_explained",
+    "observations": 3,
+    "event_matches": 3,
+    "actions": [],
+    "action_ids": [],
+    "action_targets": {},
+    "supporting_observations": [
+      "obs_ben_auth",
+      "obs_ben_explain",
+      "obs_ben_mail"
+    ],
+    "warnings": [
+      "benign_explanation_is_case_scoped_not_universal"
+    ]
+  },
+  "incomplete": {
+    "case_id": "LAB-IR-INCOMPLETE",
+    "severity": "SEV-1",
+    "urgency": "urgent",
+    "confidence": "low",
+    "disposition": "suspected_incident",
+    "observations": 1,
+    "event_matches": 0,
+    "actions": [
+      "investigate_signins",
+      "review_authentication_methods",
+      "revoke_sessions",
+      "scope_recipients"
+    ],
+    "action_ids": [
+      "policy_investigate_signins",
+      "policy_review_authentication_methods",
+      "policy_revoke_sessions",
+      "policy_scope_recipients"
+    ],
+    "action_targets": {
+      "investigate_signins": [
+        "user_casey"
+      ],
+      "review_authentication_methods": [
+        "user_casey"
+      ],
+      "revoke_sessions": [
+        "user_casey"
+      ],
+      "scope_recipients": [
+        "user_casey"
+      ]
+    },
+    "supporting_observations": [
+      "obs_report_only"
+    ],
+    "warnings": [
+      "identity_logs_missing",
+      "mail_logs_missing",
+      "no_artifact_correlated_observations"
+    ]
+  }
+}

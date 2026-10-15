@@ -1,0 +1,1 @@
+Synthetic caller reports entering a password; service logs not collected.

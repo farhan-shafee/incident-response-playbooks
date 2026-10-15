@@ -1,0 +1,131 @@
+{
+  "actions": [
+    {
+      "id": "action_revoke",
+      "kind": "revoke_sessions",
+      "reason": "Consider authorized session controls; not executed.",
+      "state": "recommended",
+      "target_ids": [
+        "user_alex"
+      ]
+    }
+  ],
+  "case_id": "LAB-IR-ADVERSARIAL",
+  "category": "phishing",
+  "coverage": {
+    "endpoint_logs": "missing",
+    "identity_logs": "available",
+    "mail_logs": "available"
+  },
+  "entities": [
+    {
+      "id": "user_alex",
+      "kind": "user",
+      "value": "user_alex@example.test"
+    }
+  ],
+  "evidence": [
+    {
+      "byte_length": 170,
+      "collected_at": "2026-10-04T12:00:00Z",
+      "id": "mail_evidence",
+      "kind": "original",
+      "path": "artifacts/mail_events.jsonl",
+      "sha256": "5aa7cd30c66467941d0feeb68b44b4c6e3bc4fae7ba140a0e37a3b67c9e24abb",
+      "source": "Synthetic message audit"
+    },
+    {
+      "byte_length": 184,
+      "collected_at": "2026-10-04T12:00:00Z",
+      "id": "identity_evidence",
+      "kind": "original",
+      "path": "artifacts/identity_events.jsonl",
+      "sha256": "17e9e7915f42cc946a15df90c7a60f71853248667e2fbaad2cc7939e691832d9",
+      "source": "Synthetic sign-in audit"
+    },
+    {
+      "byte_length": 77,
+      "collected_at": "2026-10-04T12:00:00Z",
+      "id": "user_report_raw",
+      "kind": "original",
+      "normalization": "utf8-bom-crlf-v1",
+      "normalized_sha256": "b3a545c1b5642341fe6f0348b1ec2e1183ef72936fbfec4366e8f23852c47172",
+      "path": "artifacts/report_raw.txt",
+      "sha256": "1ab6f8415b02dd20971fffc2e3b3fd2b6ce6d2f80017113473e66e7633dc0af6",
+      "source": "Synthetic user statement"
+    },
+    {
+      "byte_length": 73,
+      "collected_at": "2026-10-04T12:00:00Z",
+      "id": "user_report_derived",
+      "kind": "derived",
+      "parent_id": "user_report_raw",
+      "path": "artifacts/report_normalized.txt",
+      "sha256": "b3a545c1b5642341fe6f0348b1ec2e1183ef72936fbfec4366e8f23852c47172",
+      "source": "Derived copy of synthetic statement",
+      "transformation": "utf8-bom-crlf-v1"
+    }
+  ],
+  "observations": [
+    {
+      "description": "Synthetic invoice-themed phishing message delivered.",
+      "entity_ids": [
+        "user_alex"
+      ],
+      "evidence_ids": [
+        "mail_evidence"
+      ],
+      "id": "obs_delivery",
+      "kind": "message_delivery",
+      "occurred_at": "2026-10-01T09:00:00-04:00",
+      "source": "artifact",
+      "source_event_id": "mail_001"
+    },
+    {
+      "description": "User reports entering credentials; account takeover not confirmed.",
+      "entity_ids": [
+        "user_alex"
+      ],
+      "evidence_ids": [
+        "user_report_raw"
+      ],
+      "id": "obs_submission",
+      "kind": "credential_submission_report",
+      "occurred_at": "2026-10-01T09:05:00-04:00",
+      "source": "reported"
+    },
+    {
+      "description": "Unfamiliar sign-in alert; legitimacy and success remain undetermined.",
+      "entity_ids": [
+        "user_alex"
+      ],
+      "evidence_ids": [
+        "identity_evidence"
+      ],
+      "id": "obs_signin",
+      "kind": "suspicious_sign_in",
+      "occurred_at": "2026-10-01T13:15:00Z",
+      "source": "artifact",
+      "source_event_id": "login_001"
+    },
+    {
+      "description": "Synthetic invoice-themed phishing message delivered.",
+      "entity_ids": [
+        "user_alex"
+      ],
+      "evidence_ids": [
+        "mail_evidence"
+      ],
+      "id": "obs_conflict",
+      "kind": "suspicious_sign_in",
+      "occurred_at": "2026-10-01T09:00:00-04:00",
+      "source": "artifact",
+      "source_event_id": "mail_001"
+    }
+  ],
+  "recovery": {
+    "state": "unverified"
+  },
+  "schema_version": "ir-case/1.0",
+  "synthetic": true
+}
