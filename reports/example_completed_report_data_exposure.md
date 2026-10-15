@@ -6,7 +6,8 @@
 
 - Incident ID: LAB-2026-004
 - Category: Data Exposure / Suspected Storage-Policy Misconfiguration
-- Severity: Provisional SEV-2 (pending data classification, actual exposure window, and access scope; escalate for regulated or broad sensitive exposure)
+- Severity: Pending criteria-based classification (policy exposure is reported, but data sensitivity, exposed scope, and the playbook's confirmed-exposure conditions are not yet established)
+- Triage urgency: Prompt data-owner and privacy assessment and authorized exposure reduction; escalate for credible regulated/high-value or broad external exposure even while classification is pending.
 - Status: Illustrative exercise; containment, recovery, and closure unverified
 
 ## Summary

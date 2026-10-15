@@ -6,7 +6,8 @@
 
 - Incident ID: LAB-2026-002
 - Category: Cloud Incident / Suspected Service-Key Misuse
-- Severity: Provisional SEV-2 (pending evidence of authorization, impact, and scope)
+- Severity: Pending criteria-based classification (anomalous API calls are reported; event count, authorization, scope, and impact are unverified)
+- Triage urgency: Prompt investigation of possible service-key misuse; escalate urgently for credible active abuse or high-impact privileges without waiting for a final severity score.
 - Status: Illustrative exercise; containment, recovery, and closure unverified
 
 ## Summary

@@ -17,7 +17,7 @@ This lab uses the following operational phases. [NIST SP 800-61 Rev. 3](https://
 
 ## Severity and Escalation
 
-- Assign a provisional severity using applicable playbook criteria and the assessed impact and scope. Severity expresses response priority; it does not establish successful account compromise or validate every hypothesis.
+- Assign a provisional severity **only when supported by applicable playbook criteria** and the assessed impact and scope. If no criterion is substantiated, record severity as **pending**, identify the missing evidence and owner, and specify urgent escalation/containment decisions separately. Severity expresses response priority; it does not establish compromise or validate every hypothesis.
 - For this lab, when playbooks overlap, use the highest applicable documented severity for initial escalation (SEV-1 is highest), unless an authorized reviewer records a justified alternative and its basis. For example, reported phishing credential submission invokes the phishing playbook's SEV-1 criterion; invoking account-compromise guidance does not lower it to SEV-2 or confirm takeover.
 - Record response urgency separately: how promptly assessment, escalation, or a proposed action is needed. Escalate credible high-impact suspicions involving critical systems, privileged identities, regulated data, or multiple systems before all evidence is available; low confidence does not automatically reduce urgency.
 - Reassess severity, scope, confidence, and urgency when new evidence, contrary findings, wider impact, or action failures change the assessment. Record the reviewer, rationale, supporting sources, and unresolved questions for any change.
@@ -47,15 +47,14 @@ Preserve these distinctions in handoffs and stakeholder updates. Record relevant
 
 ### Historical Illustrative Reports
 
-These historical lab examples have not yet satisfied the evidence-backed recovery and closure requirements above:
+The following historical lab reports are **illustrative**, not independently verified investigations. Their legacy filenames contain `example_completed_report`, but that naming does not establish successful containment, recovery, or closure:
 
 - [example_completed_report_cloud.md](../reports/example_completed_report_cloud.md)
 - [example_completed_report_malware.md](../reports/example_completed_report_malware.md)
 - [example_completed_report_data_exposure.md](../reports/example_completed_report_data_exposure.md)
+- [example_completed_report_phishing.md](../reports/example_completed_report_phishing.md)
 
-In these three reports, "Resolved (Lab)" and completed-action wording represent unverified exercise assumptions, not independently verified operational results. No supporting artifacts or verification records are provided for those claimed outcomes. Each report still requires individual correction in a subsequent PR; this clarification neither supplies missing evidence nor validates containment, recovery, or closure.
-
-All new evidence-backed incident cases must meet the requirements above. Historical labels and assumed outcomes cannot serve as verification evidence or as an exception to those requirements.
+All four reports now explicitly mark response actions and closure as unverified, identify evidence gaps, and describe the checks needed before accepting recovery. None supplies original incident artifacts or actual approved-action and verification records; do **not** cite an example as proof of performed response. Every new evidence-backed case must still meet the collection, decision, severity, monitoring, and recovery requirements above. An assumed exercise outcome is never an exception.
 
 ## Portfolio Lab Boundaries
 
