@@ -11,7 +11,7 @@ Thanks for your interest in improving this incident response portfolio lab.
 - Prefer UTC for derived chronology while retaining source timestamp and offset information where the source provides them. Do not invent forensic evidence, original-byte hashes, approval records, incident timestamps, or a custody chain.
 - Keep required playbook headings consistent across all incident types.
 - Use the process described in [SECURITY.md](SECURITY.md) for potentially sensitive reporting; never post secrets or a sensitive security issue in a public GitHub issue.
-- Do not add live containment integrations, malware execution, secret retrieval, or production account changes to this educational repository without a separately approved scope.
+- **Never** add live containment integrations, malware execution, credential/secret retrieval, or production account changes to this synthetic-only repository. Any separately authorized operational work belongs in a distinct, purpose-built project with its own governance and safety controls; approval elsewhere does not override this lab's boundaries.
 
 ## Validation
 
