@@ -8,31 +8,34 @@ Stop encryption spread, preserve evidence, and restore critical services from tr
 - **High (SEV-1):** Active encryption, ransom note, data exfiltration indicators, or broad impact.
 
 ## Initial Triage Steps
-1. Confirm encryption behavior and ransom artifacts.
-2. Identify patient zero and potential lateral movement.
-3. Determine impact to critical systems and backups.
-4. Assess exfiltration indicators.
+1. Assess **suspected pre-encryption activity** (ransomware staging, destructive tooling, backup tampering, unusual remote execution, or mass-file operations) as well as actual encryption or ransom artifacts. Do not wait for confirmed encryption before escalating credible broad-impact risk.
+2. Identify candidate initial access, affected identity/host scope, likely propagation paths, and evidence limitations; do not assume a confirmed patient zero.
+3. Determine business-critical dependencies and whether backup storage, management identities, recovery credentials, or immutability controls are threatened.
+4. Assess data-access/exfiltration indicators separately from exposure, encryption, and confirmed disclosure; record provisional severity and uncertainty.
 
 ## Evidence to Collect
-- Ransom note, encrypted extension patterns, and malware hashes.
-- Endpoint process and network telemetry.
-- Authentication logs for lateral movement.
-- Backup job logs and restoration status.
+- Ransom notes, file-change metadata, suspicious process and script records, and hashes of actually retained artifacts.
+- Endpoint process and network telemetry with source event IDs, capture times, and collection scope.
+- Authentication, management, and remote-execution logs supporting or contradicting lateral-movement hypotheses.
+- Backup configuration and job histories, restore-point provenance, change histories, and health/immutability status; avoid exposing recovery secrets.
+- Preserve available originals and log coverage before destructive recovery actions where feasible; document emergency exceptions, missing telemetry, and evidence loss.
 
 ## Containment Steps
-- Isolate infected systems and network segments.
-- Disable affected accounts and high-risk service accounts.
-- Block known C2/exfiltration infrastructure.
+Actions require **recorded approval** under the [response action status policy](../docs/incident_response_methodology.md#response-action-status). For emergency delegated authority, record the authorizing role, scope, rationale, and escalation.
+- Coordinate bounded isolation of affected hosts or segments with system/network owners, checking service and evidence-acquisition dependencies. Do not imply every suspicious host is confirmed infected.
+- Coordinate narrowly scoped identity/service-account restrictions with administrators; account for critical service dependencies, backup-plane access, and an approved alternate recovery path.
+- Protect backup control planes, offline/immutable copies, and management credentials while considering containment and restoration; do not reconnect untrusted production systems to recovery storage.
+- Evaluate targeted infrastructure blocks and record rollbacks, monitoring, and independent verification of effective isolation or access restrictions, including failed or partially contained targets.
 
 ## Eradication Steps
-- Remove ransomware tooling and persistence.
-- Close exploited pathways (RDP/VPN/vulnerable services).
-- Validate environment for dormant footholds.
+- Record a preservation decision before removing suspected tooling or persistence or rebuilding systems. Document urgent containment exceptions if evidence must be sacrificed to stop spread.
+- Remove or rebuild only authorized, scoped assets after investigative and integrity assessment; close supported initial-access pathways (such as exposed remote services or vulnerabilities).
+- Test for possible dormant access and persistence without claiming absence of every foothold based on incomplete telemetry.
 
 ## Recovery Steps
-- Restore prioritized systems from clean backups.
-- Validate integrity before production return.
-- Maintain intensified monitoring post-recovery.
+- Validate restore-point integrity, trust, coverage, and recovery isolation before promoting prioritized services; do not equate successful restore execution with safe production recovery.
+- Test business functionality, identity permissions, backup-plane integrity, connectivity, and defined persistence checks with responsible owners.
+- Keep enhanced monitoring for an explicit, approved interval; record check outcomes, residual risk, reopening criteria, and closure authorization. Unverified systems remain in a pending or partial recovery state.
 
 ## Communication / Escalation Guidance
 - Immediate executive/legal escalation for SEV-1.
