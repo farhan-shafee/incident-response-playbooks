@@ -15,25 +15,28 @@ Contain suspicious cloud activity and restore trusted cloud configuration across
 4. Determine potential data access/exfiltration.
 
 ## Evidence to Collect
-- Cloud audit logs (management and data events).
-- IAM policy/role change history.
-- Storage/object access logs.
-- Network flow logs and security group/firewall changes.
+- Cloud management audit events and, **where separately enabled**, relevant data-access events; document account/region, time bounds, retention, permissions, and source coverage. Management-event history alone cannot prove absence of object-level reads.
+- IAM policy/role, authentication method, credential metadata, and change history without exposing secrets.
+- Storage/object access logs and policy/configuration snapshots, distinguishing observed access from permissive configuration.
+- Network flow records, security-group/firewall changes, and affected workload/service dependencies.
+- Preserve scoped original exports and configuration history before destructive changes where feasible, recording source event IDs, acquisition, hashes where available, and visibility gaps.
 
 ## Containment Steps
-- Disable/rotate compromised keys and credentials.
-- Revoke suspicious sessions and temporary credentials.
-- Isolate affected resources and lock down network access.
+Apply the [approval and verification policy](../docs/incident_response_methodology.md#response-action-status) to every proposed action. Name the cloud and workload owners, target resources, authorized role, dependencies, fallback access, and emergency-delegation rules.
+- Evaluate scoped credential disablement/rotation only after risk and service dependencies are identified; keep a recovery path for critical workloads. Verify effective rejection of old credentials and legitimate access afterward.
+- Coordinate temporary-session and token restrictions with identity owners; token/provider/application invalidation can be delayed or incomplete. Distinguish request acceptance from verified revocation.
+- Consider targeted resource/network isolation with service owners and an impact/rollback plan; do not apply broad subscription/project changes from a single anomalous event.
+- Record proposed, approved, attempted, verified, failed, and unknown containment results separately and include any targets not reached.
 
 ## Eradication Steps
-- Remove unauthorized resources and backdoor IAM artifacts.
-- Revert malicious or risky cloud configurations.
-- Patch vulnerable workloads/images.
+- Before deleting suspicious resources or backdoor IAM artifacts, preserve configurations, logs, access relationships, and snapshot evidence as warranted. Document urgent exceptions and evidence loss.
+- Remove only substantiated unauthorized resources and privileges in an authorized scope, with owner-approved change records and effectiveness checks.
+- Revert risky configurations and patch affected workloads using verified baselines; do not call an unfamiliar API source malicious without corroboration.
 
 ## Recovery Steps
-- Rebuild/restore affected workloads from known-good templates.
-- Re-enable services with guardrails and monitoring.
-- Validate least-privilege and logging coverage.
+- Rebuild or restore workloads from known-good templates and verify dependencies, identity permissions, workload behavior, and effective access controls.
+- Re-enable services only with approved guardrails, rollback readiness, bounded monitoring, and verified management/data-log coverage appropriate to the product.
+- Record impact, coverage limitations, residual risk, follow-up ownership, acceptance checks, and case-reopening triggers. A successful API response is not itself proof of recovery or closure.
 
 ## Communication / Escalation Guidance
 - Escalate to cloud platform owners and security leadership for SEV-1.
