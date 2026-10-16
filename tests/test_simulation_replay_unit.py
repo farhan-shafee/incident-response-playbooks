@@ -262,7 +262,8 @@ class ReplayUnitTests(unittest.TestCase):
                 row = copy.deepcopy(self.records[("records", source)])
                 row.update(record_id="hidden_adverse", observed_state=("active_session" if record_type == "verification" else "adverse"))
                 self.records[("records", "hidden_adverse")] = row
-                self.assertFalse(self.run_replay()["recovery"]["simulation_closure_accepted"])
+                with self.assertRaisesRegex(CaseError, "conflicting per-target"):
+                    self.run_replay()
 
 
 class EvidenceUnitTests(unittest.TestCase):

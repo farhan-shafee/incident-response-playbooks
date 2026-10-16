@@ -68,6 +68,22 @@ def validate_record(row: dict, actions: dict[str, dict], actors: dict[str, dict]
     return row
 
 
+def validate_unique_outcome_records(records: dict[tuple[str, str], dict]) -> None:
+    """One outcome per type/action/target across ALL supplied artifacts in v1.
+
+    Checking selected references alone permits a favorable event transition to
+    conceal an adverse, unreferenced row. Retries/time-series reconciliation are
+    unsupported, so even identical duplicate target outcomes fail closed.
+    """
+    seen: set[tuple[str, str, str]] = set()
+    for row in records.values():
+        if row["record_type"] not in {"verification", "monitoring"}:
+            continue
+        key = (row["record_type"], row["action_id"], row["target_id"])
+        require(key not in seen, "simulation evidence: duplicate or conflicting per-target outcome records")
+        seen.add(key)
+
+
 def load_evidence(plan: dict, path: str | Path) -> tuple[list[dict], dict[tuple[str, str], dict]]:
     """Hash bounded local files, then parse and validate all UTF-8 JSONL rows.
 
@@ -112,6 +128,7 @@ def load_evidence(plan: dict, path: str | Path) -> tuple[list[dict], dict[tuple[
             key = (item["id"], row["record_id"])
             require(key not in records, "simulation evidence: duplicate scoped record identity")
             records[key] = row
+    validate_unique_outcome_records(records)
     return artifacts, records
 
 

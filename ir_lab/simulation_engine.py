@@ -5,7 +5,8 @@ from copy import deepcopy
 
 from .contracts import require, timestamp
 from .simulation_contracts import action_binding_digest, digest
-from .simulation_verification import actor_role, validate_record, verification_outcome
+from .simulation_verification import (actor_role, validate_record,
+                                      validate_unique_outcome_records, verification_outcome)
 
 
 def _refs(refs: list[dict], records: dict[tuple[str, str], dict]) -> list[tuple[tuple[str, str], dict]]:
@@ -115,6 +116,7 @@ def replay(plan: dict, case_result: dict, records: dict[tuple[str, str], dict],
     The requested state is checked against the computed transition. An operator's
     acknowledgement is a receipt of an attempt, never proof of effectiveness.
     """
+    validate_unique_outcome_records(records)
     actors = {actor["id"]: actor for actor in plan["actors"]}
     actions = {action["action_id"]: {**deepcopy(action), "state": "recommended",
                 "approval": "not_recorded", "execution": "not_recorded",

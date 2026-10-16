@@ -99,7 +99,9 @@ precede the attempt, and must finish by the record/event/as-of instant.
 for a verified outcome. Some effective targets with missing/adverse/unknown targets
 are partially effective; adverse evidence without effective targets is failed;
 otherwise the outcome is unverified. Duplicate/conflicting observations for a target
-in one verification batch reject instead of choosing the most favorable record.
+reject across **all supplied artifacts**, including unreferenced records, instead
+of choosing the most favorable record. V1 allows one verification and one monitoring
+record per action/target; retries and time-series reconciliation are unsupported.
 
 Monitoring records use the same shape as verification with `record_type=monitoring`
 and `observed_state=clear|adverse|unknown`. They refer to exact actions and targets.
