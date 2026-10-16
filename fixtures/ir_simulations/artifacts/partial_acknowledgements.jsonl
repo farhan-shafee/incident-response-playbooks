@@ -1,0 +1,5 @@
+{"acknowledged":true,"action_id":"policy_investigate_signins","at":"2026-10-05T09:05:00Z","kind":"investigate_signins","operator_id":"sim_operator","record_id":"ack_1","record_type":"acknowledgement","target_ids":["user_alex"]}
+{"acknowledged":true,"action_id":"action_quarantine","at":"2026-10-05T09:05:00Z","kind":"quarantine_message","operator_id":"sim_operator","record_id":"ack_2","record_type":"acknowledgement","target_ids":["user_alex"]}
+{"acknowledged":true,"action_id":"policy_review_authentication_methods","at":"2026-10-05T09:05:00Z","kind":"review_authentication_methods","operator_id":"sim_operator","record_id":"ack_3","record_type":"acknowledgement","target_ids":["user_alex"]}
+{"acknowledged":false,"action_id":"action_revoke","at":"2026-10-05T09:05:00Z","kind":"revoke_sessions","operator_id":"sim_operator","record_id":"ack_4","record_type":"acknowledgement","target_ids":["user_alex"]}
+{"acknowledged":true,"action_id":"policy_scope_recipients","at":"2026-10-05T09:05:00Z","kind":"scope_recipients","operator_id":"sim_operator","record_id":"ack_5","record_type":"acknowledgement","target_ids":["user_alex"]}
