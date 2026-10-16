@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import stat
 import tempfile
 
 from .contracts import CaseError, document, require
@@ -13,6 +14,23 @@ from .contracts import CaseError, document, require
 MAX_CASE_BYTES = 1_048_576
 MAX_EVIDENCE_BYTES = 524_288
 SAFE_RELATIVE = re.compile(r"^[a-zA-Z0-9._/-]+$")
+
+
+def path_is_redirect(path: Path) -> bool:
+    """Reject symlinks and Windows reparse points, including junctions on 3.11.
+
+    Path.is_symlink alone does not recognize NTFS directory junctions. Never
+    follow a redirected output parent merely because its target is a directory.
+    """
+    try:
+        metadata = path.lstat()
+    except FileNotFoundError:
+        return False
+    except OSError as exc:
+        raise CaseError("path: cannot inspect link/reparse metadata") from exc
+    return stat.S_ISLNK(metadata.st_mode) or bool(
+        getattr(metadata, "st_file_attributes", 0) &
+        getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400))
 
 
 def json_pairs(items: list[tuple[str, object]]) -> dict:
@@ -25,7 +43,7 @@ def json_pairs(items: list[tuple[str, object]]) -> dict:
 
 def case_from_file(path: str | Path) -> dict:
     file = Path(path)
-    require(file.is_file() and not file.is_symlink(), "case: missing or symlink file")
+    require(file.is_file() and not path_is_redirect(file), "case: missing or redirected file")
     try:
         with file.open("rb") as handle:
             raw = handle.read(MAX_CASE_BYTES + 1)
@@ -50,7 +68,7 @@ def safe_artifact(case_dir: Path, value: str) -> Path:
             "evidence: unsafe relative components")
     candidate = case_dir.joinpath(*components)
     for item in [case_dir, *[case_dir.joinpath(*components[:i]) for i in range(1, len(components) + 1)]]:
-        require(not item.is_symlink(), "evidence: symlink path prohibited")
+        require(not path_is_redirect(item), "evidence: symlink/reparse path prohibited")
     require(candidate.is_file(), "evidence: artifact missing or not a file")
     require(candidate.resolve().is_relative_to(case_dir.resolve()), "evidence: path escapes case directory")
     return candidate
@@ -121,11 +139,11 @@ def write_new_file(target: str | Path, raw: bytes, case_path: str | Path, case: 
     """
     path = Path(target).absolute()
     source = Path(case_path).absolute()
-    require(path != source and not path.exists() and not path.is_symlink(),
+    require(path != source and not path.exists() and not path_is_redirect(path),
             "output: source alias or destination already exists")
     require(path.parent.is_dir(), "output: parent directory must already exist")
     for ancestor in [path.parent, *path.parent.parents]:
-        require(not ancestor.is_symlink(), "output: symlink parent prohibited")
+        require(not path_is_redirect(ancestor), "output: symlink/reparse parent prohibited")
     forbidden = {source.resolve()} | {
         safe_artifact(source.parent, item["path"]).resolve() for item in case["evidence"]
     }
