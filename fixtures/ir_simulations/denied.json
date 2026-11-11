@@ -1,0 +1,212 @@
+{
+  "actions": [
+    {
+      "action_id": "policy_investigate_signins",
+      "kind": "investigate_signins",
+      "supporting_observation_ids": [
+        "obs_signin",
+        "obs_submission"
+      ],
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "action_quarantine",
+      "kind": "quarantine_message",
+      "supporting_observation_ids": [
+        "obs_delivery"
+      ],
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "policy_review_authentication_methods",
+      "kind": "review_authentication_methods",
+      "supporting_observation_ids": [
+        "obs_signin",
+        "obs_submission"
+      ],
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "action_revoke",
+      "kind": "revoke_sessions",
+      "supporting_observation_ids": [
+        "obs_signin",
+        "obs_submission"
+      ],
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "policy_scope_recipients",
+      "kind": "scope_recipients",
+      "supporting_observation_ids": [
+        "obs_delivery",
+        "obs_signin",
+        "obs_submission"
+      ],
+      "target_ids": [
+        "user_alex"
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "display_name": "Fictional approver",
+      "id": "sim_approver",
+      "role": "approver",
+      "synthetic": true
+    },
+    {
+      "display_name": "Fictional operator",
+      "id": "sim_operator",
+      "role": "operator",
+      "synthetic": true
+    },
+    {
+      "display_name": "Fictional verifier",
+      "id": "sim_verifier",
+      "role": "verifier",
+      "synthetic": true
+    },
+    {
+      "display_name": "Fictional reviewer",
+      "id": "sim_reviewer",
+      "role": "reviewer",
+      "synthetic": true
+    }
+  ],
+  "as_of": "2026-10-05T10:30:00Z",
+  "case_id": "LAB-IR-RESPONSE",
+  "case_sha256": "a27c5f8e6357f919392e593aba8dc0cc83acc047760e35862f606318d6c32931",
+  "events": [
+    {
+      "action_id": "policy_investigate_signins",
+      "approver_id": "sim_approver",
+      "at": "2026-10-05T09:00:00Z",
+      "binding_sha256": "a10058546b6091c663917cd530d4db52eaca70e62df0428d9c57ec8e25758324",
+      "evidence_refs": [],
+      "expires_at": "2026-10-05T10:00:00Z",
+      "id": "approval_1",
+      "kind": "approval",
+      "new_state": "denied",
+      "previous_state": "recommended",
+      "reason": "Fictional exercise decision; this conveys no operational authority.",
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "action_quarantine",
+      "approver_id": "sim_approver",
+      "at": "2026-10-05T09:00:00Z",
+      "binding_sha256": "49cbcc4ddcb6107eceb1773916042a76deb6154d519b75ba1b84043111ac14d2",
+      "evidence_refs": [],
+      "expires_at": "2026-10-05T10:00:00Z",
+      "id": "approval_2",
+      "kind": "approval",
+      "new_state": "denied",
+      "previous_state": "recommended",
+      "reason": "Fictional exercise decision; this conveys no operational authority.",
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "policy_review_authentication_methods",
+      "approver_id": "sim_approver",
+      "at": "2026-10-05T09:00:00Z",
+      "binding_sha256": "12ac64a542100165f40ba5f014270fe22f96bf3d4ad104b76685059e473189d6",
+      "evidence_refs": [],
+      "expires_at": "2026-10-05T10:00:00Z",
+      "id": "approval_3",
+      "kind": "approval",
+      "new_state": "denied",
+      "previous_state": "recommended",
+      "reason": "Fictional exercise decision; this conveys no operational authority.",
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "action_revoke",
+      "approver_id": "sim_approver",
+      "at": "2026-10-05T09:00:00Z",
+      "binding_sha256": "4fdad75c23c1390091717606deda4ddebd355ff6dcdbbfea615c5c6fc9db1394",
+      "evidence_refs": [],
+      "expires_at": "2026-10-05T10:00:00Z",
+      "id": "approval_4",
+      "kind": "approval",
+      "new_state": "denied",
+      "previous_state": "recommended",
+      "reason": "Fictional exercise decision; this conveys no operational authority.",
+      "target_ids": [
+        "user_alex"
+      ]
+    },
+    {
+      "action_id": "policy_scope_recipients",
+      "approver_id": "sim_approver",
+      "at": "2026-10-05T09:00:00Z",
+      "binding_sha256": "bbae24b432cb9e5d3cb70680f22f80fe37b7340b5685b6e6994bfe09e98bc842",
+      "evidence_refs": [],
+      "expires_at": "2026-10-05T10:00:00Z",
+      "id": "approval_5",
+      "kind": "approval",
+      "new_state": "denied",
+      "previous_state": "recommended",
+      "reason": "Fictional exercise decision; this conveys no operational authority.",
+      "target_ids": [
+        "user_alex"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "byte_length": 0,
+      "collected_at": "2026-10-05T09:06:00Z",
+      "id": "sim_acknowledgements",
+      "kind": "original",
+      "path": "artifacts/denied_acknowledgements.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "Hand-authored fictional exercise acknowledgements"
+    },
+    {
+      "byte_length": 0,
+      "collected_at": "2026-10-05T09:16:00Z",
+      "id": "sim_verifications",
+      "kind": "original",
+      "path": "artifacts/denied_verifications.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "Hand-authored fictional exercise verifications"
+    },
+    {
+      "byte_length": 0,
+      "collected_at": "2026-10-05T10:21:00Z",
+      "id": "sim_monitoring",
+      "kind": "original",
+      "path": "artifacts/denied_monitoring.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "Hand-authored fictional exercise monitoring"
+    }
+  ],
+  "recovery": {
+    "acceptance": null,
+    "monitoring_refs": [],
+    "observation_end": "2026-10-05T10:20:00Z",
+    "observation_start": "2026-10-05T09:20:00Z",
+    "residual_risks": [
+      "All exercise observations and actors are fictional; production recovery remains unverified."
+    ]
+  },
+  "result_sha256": "f9f9951df76836620edf6f2ba6300ca2aae1ac4e2b022a945a0b6ab23f67d67e",
+  "schema_version": "ir-simulation/1.0",
+  "simulation_id": "SIM-DENIED",
+  "synthetic": true
+}

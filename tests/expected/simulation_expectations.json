@@ -1,0 +1,56 @@
+{
+  "denied": {
+    "simulation_closure_accepted": false,
+    "states": {
+      "investigate_signins": "denied",
+      "quarantine_message": "denied",
+      "review_authentication_methods": "denied",
+      "revoke_sessions": "denied",
+      "scope_recipients": "denied"
+    }
+  },
+  "expired": {
+    "cli_exit_code": 2,
+    "controlled_rejection": true
+  },
+  "misleading_success": {
+    "simulation_closure_accepted": false,
+    "states": {
+      "investigate_signins": "verified_effective_synthetic",
+      "quarantine_message": "verified_effective_synthetic",
+      "review_authentication_methods": "verified_effective_synthetic",
+      "revoke_sessions": "failed",
+      "scope_recipients": "verified_effective_synthetic"
+    }
+  },
+  "missing_approval": {
+    "simulation_closure_accepted": false,
+    "states": {
+      "investigate_signins": "recommended",
+      "quarantine_message": "recommended",
+      "review_authentication_methods": "recommended",
+      "revoke_sessions": "recommended",
+      "scope_recipients": "recommended"
+    }
+  },
+  "partial": {
+    "simulation_closure_accepted": false,
+    "states": {
+      "investigate_signins": "verified_effective_synthetic",
+      "quarantine_message": "verified_effective_synthetic",
+      "review_authentication_methods": "verified_effective_synthetic",
+      "revoke_sessions": "failed",
+      "scope_recipients": "verified_effective_synthetic"
+    }
+  },
+  "success": {
+    "simulation_closure_accepted": true,
+    "states": {
+      "investigate_signins": "verified_effective_synthetic",
+      "quarantine_message": "verified_effective_synthetic",
+      "review_authentication_methods": "verified_effective_synthetic",
+      "revoke_sessions": "verified_effective_synthetic",
+      "scope_recipients": "verified_effective_synthetic"
+    }
+  }
+}

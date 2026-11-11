@@ -2,6 +2,53 @@
 
 A **synthetic-only cybersecurity engineering portfolio** combining six incident-response playbooks with a working offline Python case-validation and phishing-triage engine.
 
+## Working Phase 2B — Offline Response Simulation
+
+The lab now replays synthetic approval, attempt and verification events against
+the **actual Phase 2A recommendations**. It validates exact case/result/action
+bindings, refuses expired or changed approval scope, and evaluates independent
+synthetic observations instead of trusting an operation acknowledgement.
+
+    Validated case -> proposed actions -> scoped simulated approval
+    -> simulated attempt receipt -> independent state observations
+    -> monitoring and residual-risk review -> simulated closure decision
+
+There is no live response adapter. Every actor, approval and outcome is an exercise
+input; the engine never revokes a real session or quarantines a real message.
+Original Phase 2A triage remains unchanged even when simulated closure is accepted.
+
+### Run the response exercise
+
+Use Python 3.11+ from the repository root; no installation or dependencies required:
+
+    python -B -m ir_lab simulation-validate fixtures/ir_cases/response_case.json --plan fixtures/ir_simulations/success.json
+    python -B -m ir_lab simulate fixtures/ir_cases/response_case.json --plan fixtures/ir_simulations/misleading_success.json
+    python -B -m ir_lab simulation-render fixtures/ir_cases/response_case.json --plan fixtures/ir_simulations/partial.json --format markdown --output response-simulation.md
+
+Choose a **new** output filename with an existing parent directory. Validation and
+stdout simulation create no report files. Rendering refuses existing destinations,
+input aliases, symlink parents and Windows reparse/junction parents.
+
+| Plan | Independently expected result |
+|---|---|
+| success | Five actions effective in synthetic evidence; complete monitoring and reviewer acceptance; simulated closure true |
+| denied | Five denials; no attempted actions; closure false |
+| partial | Four actions effective; session revocation failed; closure false |
+| misleading_success | Revocation acknowledged true, but active session observed; revocation failed and closure false |
+| expired | Attempt after approval expiry rejects with exit 2 and no report |
+| missing_approval | All actions remain recommended; closure false |
+
+JSON and Markdown expose exact targets, supporting observations, fictional actors,
+transition history, acknowledgement and verification records, artifact hashes and
+blocked recovery gates. Repeated replay is stateless and deterministic.
+
+    python -B scripts/generate_simulation_fixtures.py --check
+    python -O -B scripts/generate_simulation_fixtures.py --check
+    python -B -m unittest discover -s tests -v
+
+See [Response Simulation](docs/SIMULATION_ENGINE.md) for the separate
+`ir-simulation/1.0` contract, state machine, safety rules, limitations and demo.
+
 > This lab is not production incident response experience, native SIEM/EDR coverage, or a system that executes containment. It does not imply operational incident-command authority or verified real-world recovery.
 
 ## Working Phase 2A — Offline Case Engine
@@ -86,8 +133,8 @@ Each playbook documents an objective, severity criteria, triage, evidence, propo
 
 ## Limits and Next Milestones
 
-Phase 2A intentionally does **not** implement a malware/ransomware triage engine, continuous monitoring, real forensic evidence acquisition, incident simulation, a backend/database, a UI, native Sentinel/Defender/SOAR integration, or executable containment.
+The lab does **not** implement a malware/ransomware triage engine, continuous monitoring, real forensic evidence acquisition, a backend/database, a UI, native Sentinel/Defender/SOAR integration, or executable containment. Phase 2B adds a bounded synthetic response simulation only.
 
-Next: Phase 2B may add **in-memory** approval-gated *simulated* response and verified-synthetic recovery states. Phase 2C may accept a versioned synthetic handoff from the separate [Threat Hunting Playbooks](https://github.com/farhan-shafee/threat-hunting-playbooks) project. **No integration currently exists.**
+Next: a separate milestone may accept a versioned synthetic handoff from the [Threat Hunting Playbooks](https://github.com/farhan-shafee/threat-hunting-playbooks) project. **No integration currently exists.** A hunt candidate would still require analyst classification and explicit simulation bindings; it would never authorize a real response.
 
 No real customer data, production metrics, authenticated sessions, secret material, malicious executable files, or verified incident-response outcomes are included in this lab.
