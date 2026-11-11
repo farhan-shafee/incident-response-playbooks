@@ -1,3 +1,8 @@
+# Keep shell scripts LF on Windows even with core.autocrlf=true.
+*.sh text eol=lf
+# Structural Bash validation uses anchored markdown headings; keep them LF in Windows checkouts.
+playbooks/*.md text eol=lf
+
 # Synthetic evidence and case fixtures are byte-for-byte artifacts; never transform line endings.
 fixtures/ir_cases/** -text
 fixtures/ir_simulations/** -text
